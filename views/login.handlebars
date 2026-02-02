@@ -1,0 +1,91 @@
+<div class="auth-container" style="max-width: 450px; margin: 50px auto; padding: 40px; background: #f8f9fa; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+    <h1 style="text-align: center; color: #333; margin-bottom: 30px;">Iniciar Sesión</h1>
+    
+    <form id="loginForm">
+        <div style="margin-bottom: 20px;">
+            <label style="display: block; margin-bottom: 8px; color: #555; font-weight: bold;">Email:</label>
+            <input 
+                type="email" 
+                id="email" 
+                name="email" 
+                required 
+                placeholder="tu@email.com"
+                style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem; box-sizing: border-box;">
+        </div>
+        
+        <div style="margin-bottom: 25px;">
+            <label style="display: block; margin-bottom: 8px; color: #555; font-weight: bold;">Contraseña:</label>
+            <input 
+                type="password" 
+                id="password" 
+                name="password" 
+                required 
+                placeholder="••••••••"
+                style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem; box-sizing: border-box;">
+        </div>
+        
+        <button 
+            type="submit" 
+            style="width: 100%; padding: 14px; background: #667eea; color: white; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: bold; cursor: pointer;">
+            Iniciar Sesión
+        </button>
+    </form>
+    
+    <div id="message" style="margin-top: 20px; padding: 12px; border-radius: 8px; display: none; text-align: center; font-weight: bold;"></div>
+    
+    <div style="text-align: center; margin-top: 25px; padding-top: 25px; border-top: 2px solid #ddd;">
+        <p style="color: #666; margin-bottom: 10px;">¿No tienes una cuenta?</p>
+        <a href="/register" style="color: #667eea; font-weight: bold; text-decoration: none;">
+            Registrarse aquí
+        </a>
+    </div>
+</div>
+
+<script>
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const messageDiv = document.getElementById('message');
+        
+        try {
+            const response = await fetch('http://localhost:8080/api/sessions/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ email, password })
+            });
+            
+            const data = await response.json();
+            
+            if (data.status === 'success') {
+                messageDiv.style.display = 'block';
+                messageDiv.style.background = '#d4edda';
+                messageDiv.style.color = '#155724';
+                messageDiv.style.border = '2px solid #c3e6cb';
+                messageDiv.textContent = data.message + ' - Redirigiendo...';
+                
+                localStorage.setItem('token', data.payload.token);
+                
+                setTimeout(() => {
+                    window.location.href = '/products';
+                }, 1000);
+            } else {
+                messageDiv.style.display = 'block';
+                messageDiv.style.background = '#f8d7da';
+                messageDiv.style.color = '#721c24';
+                messageDiv.style.border = '2px solid #f5c6cb';
+                messageDiv.textContent = data.message;
+            }
+        } catch (error) {
+            messageDiv.style.display = 'block';
+            messageDiv.style.background = '#f8d7da';
+            messageDiv.style.color = '#721c24';
+            messageDiv.style.border = '2px solid #f5c6cb';
+            messageDiv.textContent = 'Error en la conexión';
+            console.error('Error:', error);
+        }
+    });
+</script>

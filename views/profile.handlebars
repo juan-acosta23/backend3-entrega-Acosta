@@ -1,0 +1,93 @@
+<div class="content">
+    <div style="max-width: 800px; margin: 0 auto;">
+        <h1 style="color: #333; margin-bottom: 30px;">Mi Perfil</h1>
+        
+        <div style="background: #f8f9fa; border-radius: 10px; padding: 30px; box-shadow: 0 3px 10px rgba(0,0,0,0.1);">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 25px;">
+                <div>
+                    <label style="display: block; color: #666; font-size: 0.9rem; margin-bottom: 5px;">Nombre:</label>
+                    <p style="font-size: 1.2rem; font-weight: bold; color: #333; margin: 0;">{{user.first_name}}</p>
+                </div>
+                
+                <div>
+                    <label style="display: block; color: #666; font-size: 0.9rem; margin-bottom: 5px;">Apellido:</label>
+                    <p style="font-size: 1.2rem; font-weight: bold; color: #333; margin: 0;">{{user.last_name}}</p>
+                </div>
+                
+                <div>
+                    <label style="display: block; color: #666; font-size: 0.9rem; margin-bottom: 5px;">Email:</label>
+                    <p style="font-size: 1.2rem; font-weight: bold; color: #333; margin: 0;">{{user.email}}</p>
+                </div>
+                
+                <div>
+                    <label style="display: block; color: #666; font-size: 0.9rem; margin-bottom: 5px;">Edad:</label>
+                    <p style="font-size: 1.2rem; font-weight: bold; color: #333; margin: 0;">{{user.age}} años</p>
+                </div>
+                
+                <div>
+                    <label style="display: block; color: #666; font-size: 0.9rem; margin-bottom: 5px;">Rol:</label>
+                    <p style="margin: 0;">
+                        <span style="display: inline-block; padding: 8px 20px; background: #667eea; color: white; border-radius: 20px; font-weight: bold; text-transform: uppercase; font-size: 0.9rem;">
+                            {{user.role}}
+                        </span>
+                    </p>
+                </div>
+                
+                <div>
+                    <label style="display: block; color: #666; font-size: 0.9rem; margin-bottom: 5px;">ID de Carrito:</label>
+                    <p style="font-size: 0.95rem; font-family: monospace; color: #333; margin: 0; background: white; padding: 8px; border-radius: 5px;">
+                        {{user.cart._id}}
+                    </p>
+                </div>
+            </div>
+            
+            <div style="margin-top: 30px; padding-top: 30px; border-top: 2px solid #ddd; display: flex; gap: 15px;">
+                <a href="/products" style="flex: 1; text-align: center; padding: 12px; background: #667eea; color: white; text-decoration: none; border-radius: 8px; font-weight: bold;">
+                    Ver Productos
+                </a>
+                
+                <a href="/carts/{{user.cart._id}}" style="flex: 1; text-align: center; padding: 12px; background: #28a745; color: white; text-decoration: none; border-radius: 8px; font-weight: bold;">
+                    Mi Carrito
+                </a>
+                
+                <button onclick="logout()" style="flex: 1; padding: 12px; background: #dc3545; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
+                    Cerrar Sesión
+                </button>
+            </div>
+        </div>
+        
+        <div style="margin-top: 30px; background: #fff3cd; border: 2px solid #ffc107; border-radius: 10px; padding: 20px;">
+            <h3 style="color: #856404; margin: 0 0 10px 0;">Información de la Cuenta</h3>
+            <p style="color: #856404; margin: 0; line-height: 1.6;">
+                Tu cuenta fue creada el {{user.createdAt}}. Tienes acceso completo a todas las funcionalidades del e-commerce según tu rol de {{user.role}}.
+            </p>
+        </div>
+    </div>
+</div>
+
+<script>
+    async function logout() {
+        if (!confirm('¿Estás seguro de que deseas cerrar sesión?')) {
+            return;
+        }
+        
+        try {
+            const response = await fetch('/api/sessions/logout', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            const data = await response.json();
+            
+            if (data.status === 'success') {
+                localStorage.removeItem('token');
+                window.location.href = '/login';
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error al cerrar sesión');
+        }
+    }
+</script>
